@@ -1,0 +1,28 @@
+<h5>{{title}}</h5>
+<hr/>
+<input type="text" class="form-control" placeholder="Búsqueda por código, cliente o dni" (keyup)="search($event)"/>
+<div class="my-3">
+    <table class="table table-sm">
+        <thead>
+            <tr>
+                <td>Fecha</td>
+                <td>Código</td>
+                <td>Dni</td>
+                <td>Cliente</td>
+                <td>Acciones</td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let item of lPedidos">
+                <td>{{item.fechaCreacion | date:'yyy-MM-dd'}}</td>
+                <td>{{item.codigo}}</td>
+                <td>{{item.dni}}</td>
+                <td>{{item.cliente}}</td>
+                <td>
+                    <button class="btn btn-primary mx-2" (click)="edit(item.idPedido)">Editar</button>
+                    <button class="btn btn-danger" (click)="delete(item.idPedido)">Eliminar</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,58 @@
+<div *ngIf="showMessage" class="alert alert-success" role="alert">{{message}}</div>
+<div *ngIf="showError" class="alert alert-danger" role="alert">{{message}}</div>
+<div class="card">
+    <div class="card-header">
+        <h6>{{title}}</h6>
+    </div>
+    <div class="card-body">
+        <form [formGroup]="formPedido">
+            <div class="mb-3 row">
+                <label class="col-sm-2 col-form-label">Fecha *</label>
+                <div class="col-sm-10">
+                    <div class="input-group">
+                        <input class="form-control" 
+                            placeholder="yyy-MM-dd" 
+                            name="dp" 
+                            ngbDatepicker #d="ngbDatepicker"
+                            formControlName="fechaCreacion">
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-secondary" type="button" (click)="d.toggle()">Seleccionar</button>
+                                
+                            </div>
+                    </div>
+                    <div *ngIf="submitted && getControl.fechaCreacion.invalid" class="text-danger">
+                        <small *ngIf="getControl.fechaCreacion.errors && getControl.fechaCreacion.errors.required">Campo obligatorio</small>
+                    </div>
+                </div>
+              </div>
+              <div class="mb-3 row">
+                <label class="col-sm-2 col-form-label">Código *</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" placeholder="codigo" formControlName="codigo"/>
+                    <div *ngIf="submitted && getControl.codigo.invalid" class="text-danger">
+                        <small *ngIf="getControl.codigo.errors && getControl.codigo.errors.required">Campo obligatorio</small>
+                    </div>
+                </div>
+              </div>
+
+              <div class="mb-3 row">
+                <label class="col-sm-2 col-form-label">Cliente *</label>
+                <div class="col-sm-10">
+                    <ng-select
+                         [items]="lClientes"
+                         bindLabel="nombreCliente"
+                         bindvalue="idCliente"
+                         placeholder="Seleccione" 
+                         formControlName="idCliente">
+                    </ng-select>
+                    <div *ngIf="submitted && getControl.idCliente.invalid" class="text-danger">
+                        <small *ngIf="getControl.idCliente.errors && getControl.idCliente.errors.required">Campo obligatorio</small>
+                    </div>
+                </div>
+              </div>
+        </form>
+    </div>
+    <div class="card-footer">
+        <button type="submit" class="btn btn-primary" (click)="submit()">Enviar</button>
+    </div>
+</div>
