@@ -118,8 +118,10 @@ namespace PedidosApi.Services
                 Pedido itemBusqueda = await ctx.Pedido.Where(w => w.IdPedido == pedido.IdPedido).FirstOrDefaultAsync();
                 if (itemBusqueda != null)
                 {
+                    itemBusqueda.Codigo = pedido.Codigo;
+                    itemBusqueda.FechaCreacion = pedido.FechaCreacion;
+                    itemBusqueda.IdCliente = pedido.IdCliente;
                     itemBusqueda.FechaModificacion = DateTime.Now;
-
                     ctx.Update(itemBusqueda);
                     await ctx.SaveChangesAsync();
                 }

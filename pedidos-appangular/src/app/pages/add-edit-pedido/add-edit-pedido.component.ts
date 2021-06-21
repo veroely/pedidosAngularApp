@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NgxSpinnerService } from "ngx-spinner";
 import { ClienteService, PedidoService } from '../../core/services';
 import { IPedido } from '../../core/models';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-add-edit-pedido',
@@ -16,28 +16,28 @@ export class AddEditPedidoComponent implements OnInit {
  submitted:boolean = false;
  lClientes:any[] =[];
  message:string = "";
- txt="";
  showMessage:boolean = false;
  showError:boolean = false;
  idPedido:number = 0;
 
  constructor(
   private spinner: NgxSpinnerService
-  ,private activateRoute:ActivatedRoute 
+  ,private activateRoute:ActivatedRoute
+  ,private router:Router 
   ,private fb:FormBuilder
   ,private srvPedido:PedidoService
   ,private srvCliente:ClienteService) {
     this.activateRoute.params.subscribe(param=>{
-      this.idPedido = param["Id"];
+      this.idPedido = Number(param["Id"]);
     });
    }
 
   ngOnInit(): void {
+    this.getClientes();
     this.initForm();
     if(this.idPedido){
       this.getPedido(this.idPedido);
     }
-    this.getClientes();
   }
 
   initForm(){
@@ -55,17 +55,15 @@ export class AddEditPedidoComponent implements OnInit {
 
   submit(){
     this.submitted = true;
-    console.log(this.formPedido.value);
     if(this.formPedido.valid){
       let pedido = this.formPedido.value as IPedido;
-      pedido.idPedido = 0;
       let fechaObject = this.formPedido.value.fechaCreacion;
       pedido.fechaCreacion = new Date(fechaObject.year,fechaObject.month-1,fechaObject.day);
       pedido.fechaModificacion = new Date();
       pedido.idCliente = this.formPedido.value.idCliente.idCliente;
 
-      console.log(pedido);
-      if(this.idPedido>0){
+      if (this.idPedido > 0) {
+        pedido.idPedido = this.idPedido;
         this.update(pedido);
       }else{
         this.crear(pedido);
@@ -79,6 +77,7 @@ export class AddEditPedidoComponent implements OnInit {
       resp=>{
         this.showMessage = true;
         this.message = "Guardado Existosamente";
+        this.submitted = false;
         this.formPedido.reset();
         this.spinner.hide();
       },
@@ -97,7 +96,7 @@ export class AddEditPedidoComponent implements OnInit {
       resp=>{
         this.showMessage = true;
         this.message = "Guardado Existosamente";
-        this.formPedido.reset();
+        this.router.navigate(["/listar"]);
         this.spinner.hide();
       },
       err=>{
@@ -113,8 +112,9 @@ export class AddEditPedidoComponent implements OnInit {
     this.srvPedido.getById(idPedido).subscribe(
       resp=>{
         let fechaNac = new Date(resp.fechaCreacion);
-        this.formPedido.controls['fechaCreacion'].setValue({year:fechaNac.getFullYear(),month:fechaNac.getMonth()+1, day:fechaNac.getDate()});
-        this.formPedido.controls['idCliente'].setValue(resp.idCliente);
+        this.formPedido.controls['fechaCreacion'].setValue({ year: fechaNac.getFullYear(), month: fechaNac.getMonth() + 1, day: fechaNac.getDate() });
+        let clienteSelect = this.lClientes.filter(f => f.idCliente === resp.idCliente)[0];
+        this.formPedido.controls['idCliente'].setValue(clienteSelect);
         this.formPedido.controls['codigo'].setValue(resp.codigo);
         this.spinner.hide();
       },
